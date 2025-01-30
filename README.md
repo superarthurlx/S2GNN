@@ -13,7 +13,7 @@ pip install -r requirements.txt
 ```
 ## Datasets
 Processed datasets and raw data can be downloaded at: https://mega.nz/folder/AeVknA4C#MuQITYW9YPcaRX6w9uk_Hg, then move it to /datasets folder, for example:
-```
+```bash
 /datasets/PEMS04/data.dat
 ```
 
