@@ -30,7 +30,7 @@ class GraphConv(nn.Module):
             W: Learnable weight matrix with shape (F_in, F_out), where F_out is the number of output features per node.
             D: The degree matrix.
     """
-    def __init__(self, input_dim, output_dim, use_bias=False):
+    def __init__(self, input_dim, output_dim, use_bias=True):
         super(GraphConv, self).__init__()
 
         # Initialize the weight matrix W (in this case called `kernel`)
@@ -56,8 +56,6 @@ class GraphConv(nn.Module):
             torch.Tensor: Output tensor after the graph convolution operation.
         """
         B, _, _ = input_tensor.shape
-        # pdb.set_trace()
-        # output = torch.bmm(adj_mat, input_tensor)
         output = torch.bmm(adj_mat, input_tensor)
         # support = torch.bmm(input_tensor, self.kernel.unsqueeze(0).expand(B, -1, -1)) # Matrix multiplication between input and weight matrix
         # output = torch.bmm(adj_mat, support) # Sparse matrix multiplication between adjacency matrix and support
@@ -83,12 +81,6 @@ class GCN(nn.Module):
     def __init__(self, hidden_dim, num_layer, init, use_bias=False, dropout_p=0.1):
         super(GCN, self).__init__()
 
-        # Define the Graph Convolution layers
-        # self.gc1 = GraphConv(hidden_dim, hidden_dim, use_bias=use_bias)
-        # self.gc2 = GraphConv(hidden_dim, hidden_dim, use_bias=use_bias)
-
-        # self.gcn = nn.Sequential(*[GraphConv(hidden_dim, hidden_dim, use_bias=use_bias) for _ in range(num_layer)])
-
         self.gcns = nn.ModuleList([GraphConv(hidden_dim, hidden_dim, use_bias=use_bias) for _ in range(num_layer)])
         # self.betas = nn.Parameter(torch.tensor([1.0] + [0.0 for i in range(num_layer)]), requires_grad=True)
 
@@ -110,7 +102,15 @@ class GCN(nn.Module):
             self.betas[-1] = (1-alpha) ** num_layer
             self.betas = self.betas / np.sum(np.abs(self.betas))
             self.betas = nn.Parameter(torch.tensor(self.betas), requires_grad=True)
+
+        elif init == 'gcn':
+            # Define the Graph Convolution layers
+            self.gc1 = GraphConv(hidden_dim, hidden_dim, use_bias=use_bias)
+            self.gc2 = GraphConv(hidden_dim, hidden_dim, use_bias=use_bias)
+
+            # self.gcn = nn.Sequential(*[GraphConv(hidden_dim, hidden_dim, use_bias=use_bias) for _ in range(num_layer)])
         
+        self.gnn_init = init
         # Define the dropout layer
         # self.dropout = nn.Dropout(dropout_p)
 
@@ -129,15 +129,18 @@ class GCN(nn.Module):
         """
         # output = []
         # output.append(self.betas[0] * input_tensor)
-        betas = self.betas
-        output = betas[0] * input_tensor
-        x = input_tensor
-        for i, gcn in enumerate(self.gcns):
-            x = betas[i+1] * gcn(x, adj_mat)
-            # output.append(x)
-            output += x
-
-     
-        return output, betas #+ input_tensor
+        if self.gnn_init == 'gcn':
+            x = self.gc1(input_tensor, adj_mat)
+            x = self.gc2(x, adj_mat)
+            return x, None
+        else:
+            betas = self.betas
+            output = betas[0] * input_tensor
+            x = input_tensor
+            for i, gcn in enumerate(self.gcns):
+                x = betas[i+1] * gcn(x, adj_mat)
+                # output.append(x)
+                output += x
+            return output, betas #+ input_tensor
 
 

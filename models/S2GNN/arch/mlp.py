@@ -92,20 +92,13 @@ class EmbeddingTrainer(nn.Module):
 class NFConnection(nn.Module):
     """Multi-Layer Perceptron with residual links."""
 
-    def __init__(self, input_dim, n_kernel, use_bern) -> None:
+    def __init__(self, input_dim, n_kernel) -> None:
         super().__init__()
       
         self.conv1 = nn.Conv2d(in_channels=1,  out_channels=n_kernel, kernel_size=(1, input_dim), bias=False)
-        # self.channel_attn = ChannelAttentionModule(num_channels=n_kernel)
-
-        # 多项式近似
-        sequences = nn.Parameter(torch.ones(n_kernel, input_dim), requires_grad=True)
-        if use_bern:
-            # self.conv1.weight = nn.Parameter(torch.cat([bernstein_approximation_log(seq, input_dim-1).unsqueeze(0) for seq in sequences], dim=0).unsqueeze(1).unsqueeze(1))
-            self.conv1.weight = nn.Parameter(torch.cat([bernstein_approximation(seq, input_dim-1).unsqueeze(0) for seq in sequences], dim=0).unsqueeze(1).unsqueeze(1))
 
         # 全一初始化
-        # self.conv1.weight = nn.Parameter(torch.ones(n_kernel, 1, 1, input_dim), requires_grad=True)
+        self.conv1.weight = nn.Parameter(torch.ones(n_kernel, 1, 1, input_dim), requires_grad=True)
 
     def forward(self, input_data: torch.Tensor) -> torch.Tensor:
         """Feed forward of MLP.
@@ -162,12 +155,16 @@ class SpatiaEncoder(nn.Module):
         if self.gnn_type == 'gcn':
             adj_mat = generate_adjacent_matrix(adp_adj)
             hidden_out, betas = self.gnn(hidden_in, adj_mat.sum(0, keepdim=True).expand(B, -1, -1))
-        
+
         elif self.gnn_type == 'bernnet':
             hidden_out, betas = self.gnn(hidden_in, adp_adj)
 
         elif self.gnn_type == 'chebnetii':
             hidden_out, betas = self.gnn(hidden_in, adp_adj)
+
+        else:
+            hidden_out = hidden_in
+            betas = None
 
         hidden_out = hidden_out.transpose(1,2).unsqueeze(-1)
         hidden_out = self.projection(hidden_out)

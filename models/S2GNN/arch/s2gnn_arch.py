@@ -33,7 +33,6 @@ class S2GNN(nn.Module):
         self.topk = model_args["topk"]
         self.n_kernel = model_args['n_kernel']
         self.if_feat = model_args['if_feat']
-        self.use_bern = model_args['use_bern']
         self.stop_grad = model_args['stop_grad']
         self.if_random_project = model_args["if_rp"]
         self.gnn_type = model_args['gnn_type']
@@ -69,7 +68,7 @@ class S2GNN(nn.Module):
             self.temporal_hidden_dim = (self.n_feature + self.topk) * self.embed_dim
             self.spatial_hidden_dim = (1 + self.n_feature) * self.embed_dim
 
-            self.node_feature_connection = NFConnection(self.input_len, self.n_kernel, self.use_bern) 
+            self.node_feature_connection = NFConnection(self.input_len, self.n_kernel) 
 
         else:
             self.temporal_hidden_dim = (1 + self.n_feature) * self.embed_dim

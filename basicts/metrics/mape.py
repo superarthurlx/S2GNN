@@ -2,9 +2,9 @@ import numpy as np
 import torch
 
 
-def masked_smape(prediction: torch.Tensor, target: torch.Tensor, null_val: float = np.nan) -> torch.Tensor:
+def masked_mape(prediction: torch.Tensor, target: torch.Tensor, null_val: float = np.nan) -> torch.Tensor:
     """
-    Calculate the Masked Symmetric Mean Absolute Percentage Error (SMAPE) between predicted and target values,
+    Calculate the Masked Mean Absolute Percentage Error (MAPE) between predicted and target values,
     ignoring entries that are either zero or match the specified null value in the target tensor.
 
     This function is particularly useful for time series or regression tasks where the target values may 
@@ -47,7 +47,7 @@ def masked_smape(prediction: torch.Tensor, target: torch.Tensor, null_val: float
     mask /= torch.mean(mask)
     mask = torch.nan_to_num(mask)
 
-    loss = torch.abs(prediction - target) / ((prediction.abs() + target.abs()) / 2)
+    loss = torch.abs((prediction - target) / target)
     loss *= mask
     loss = torch.nan_to_num(loss)
 

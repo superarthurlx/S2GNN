@@ -13,17 +13,18 @@ from .arch import S2GNN
 
 ############################## Hot Parameters ##############################
 # Dataset & Metrics configuration
-DATA_NAME = 'Electricity'  # Dataset name
+DATA_NAME = 'PEMS03'  # Dataset name
 regular_settings = get_regular_settings(DATA_NAME)
-INPUT_LEN = regular_settings['INPUT_LEN']  # Length of input sequence
-OUTPUT_LEN = regular_settings['OUTPUT_LEN']  # Length of output sequence
+INPUT_LEN = 96 #regular_settings['INPUT_LEN']  # Length of input sequence
+OUTPUT_LEN = 96 #regular_settings['OUTPUT_LEN']  # Length of output sequence
 TRAIN_VAL_TEST_RATIO = regular_settings['TRAIN_VAL_TEST_RATIO']  # Train/Validation/Test split ratios
 NORM_EACH_CHANNEL = regular_settings['NORM_EACH_CHANNEL'] # Whether to normalize each channel of the data
 RESCALE = regular_settings['RESCALE'] # Whether to rescale the data
 NULL_VAL = regular_settings['NULL_VAL'] # Null value in the data
+# NULL_VAL = 0.0
 # Model architecture and parameters
 MODEL_ARCH = S2GNN
-NUM_NODES = 321
+NUM_NODES = 358
 MODEL_PARAM = {
     "num_nodes": NUM_NODES,
     "input_len": INPUT_LEN,
@@ -33,9 +34,9 @@ MODEL_PARAM = {
     "embed_std": 0.01,
     "constant": 10,
     "output_len": OUTPUT_LEN,
-    "num_layer": 5,
+    "num_layer": 7,
     "num_gnn_layer": 10,
-    "init": "RWR", # KI Random  
+    "init": "gcn", # KI Random gcn
     "stop_grad": 100,
     "if_rp": True,
     'gnn_type': 'chebnetii',
@@ -43,7 +44,7 @@ MODEL_PARAM = {
     "if_node": True,
     "if_T_i_D": True,
     "if_D_i_W": True,
-    "time_of_day_size": 24,
+    "time_of_day_size": 288,
     "day_of_week_size": 7,
     # -------kernel-------
     "if_feat": True,
@@ -63,7 +64,7 @@ CFG.RUNNER = SimpleTimeSeriesForecastingRunner
 
 ############################## Environment Configuration ##############################
 CFG.ENV = EasyDict() # Environment settings. Default: None
-CFG.ENV.SEED = 2 # Random seed. Default: None
+CFG.ENV.SEED = 0 # Random seed. Default: None
 
 ############################## Dataset Configuration ##############################
 CFG.DATASET = EasyDict()

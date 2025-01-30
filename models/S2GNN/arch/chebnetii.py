@@ -76,5 +76,5 @@ class ChebNetII(nn.Module):
     #     return norm.view(-1, 1) * x_j
 
     def __repr__(self):
-        return '{}(K={}, temp={})'.format(self.__class__.__name__, self.K,
-                                          self.temp)
+        return '{}(K={}, betas={})'.format(self.__class__.__name__, self.K,
+                                          self.betas)
