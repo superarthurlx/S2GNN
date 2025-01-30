@@ -1,9 +1,5 @@
 # S2GNN
-
-First, extract the Electricity data in the `/datasets/raw_data/` directory. Run `run_datasets.sh` to obtain the processed dataset, then execute `run.sh`. To predict different lengths, manually modify the configuration file.
-
-# S2GNN
-S2GNN: Improving Air Quality Forecasting by Leveraging Meteorological Information
+S2GNN: Long-term Spatio-Temporal Forecasting using Spectral Graph Neural Networks
 
 ## Dependencies
 ```bash
@@ -16,7 +12,10 @@ pip install torch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 --index-url https
 pip install -r requirements.txt
 ```
 ## Datasets
-Processed datasets and raw data can be downloaded at: https://mega.nz/folder/AeVknA4C#MuQITYW9YPcaRX6w9uk_Hg
+Processed datasets and raw data can be downloaded at: https://mega.nz/folder/AeVknA4C#MuQITYW9YPcaRX6w9uk_Hg, then move it to /datasets folder, for example:
+```
+/datasets/PEMS04/data.dat
+```
 
 ## Implementation
 ```bash
