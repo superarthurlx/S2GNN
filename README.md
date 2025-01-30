@@ -24,5 +24,5 @@ python experiments/train.py -c models/S2GNN/Electricity.py -g 0
 ```
 ### To run other baselines, for example: 
 ```bash
-python experiments/train.py -c baselines/iTransformer/BJAQ-NCDC.py -g 0
+python experiments/train.py -c baselines/iTransformer/PEMS04.py -g 0
 ```
